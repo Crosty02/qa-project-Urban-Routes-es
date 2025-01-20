@@ -14,3 +14,4 @@ class UrbanRoutesLocators:
     ICE_CREAM_PLUS_BUTTON = (By.ID, "ice-cream-plus")
     SEARCH_TAXI_MODAL = (By.ID, "search-modal")
     DRIVER_INFO = (By.ID, "driver-info")
+

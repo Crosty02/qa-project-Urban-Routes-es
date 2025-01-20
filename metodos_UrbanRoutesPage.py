@@ -64,3 +64,4 @@ class UrbanRoutesPage:
     def wait_for_driver_info(self):
         """Espera a que aparezca la información del conductor"""
         self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.DRIVER_INFO))
+
