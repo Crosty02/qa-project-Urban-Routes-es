@@ -4,9 +4,13 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
 def setup_driver():
-    options = Options()
-    options.add_argument("--window-size=1920,1080")
+    """Configura el driver de Selenium para Chrome."""
+    chrome_options = Options()
+    chrome_options.add_argument("--start-maximized")
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-notifications")
+    chrome_options.add_argument("--headless")  # Opcional: Ejecutar sin interfaz gráfica
     service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver
-

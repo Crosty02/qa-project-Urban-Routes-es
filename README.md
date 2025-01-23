@@ -1,36 +1,61 @@
 Proyecto Urban Routes
-Nombre completo y cohort
-Crystal Puentes - Grupo 19 QA
+Desarrollado por: Crystal Puentes - Grupo 19 QA
 
-Descripción del proyecto
-Este proyecto tiene como objetivo realizar pruebas automatizadas sobre un servicio web, validando la creación de kits y usuarios a través de solicitudes HTTP. Se incluyen pruebas positivas y negativas para garantizar el correcto funcionamiento de las funcionalidades del sistema.
+Descripción del Proyecto
+El objetivo de este proyecto es automatizar las pruebas sobre el proceso completo de solicitar un taxi en 
+Urban Routes. Las pruebas cubren acciones como la configuración de la dirección, la selección de tarifa, el 
+ingreso de datos personales y de pago, y la solicitud de un taxi, entre otros. Se validan tanto los flujos 
+principales como casos opcionales, como la visualización de la información del conductor.
 
-Estructura del proyecto
-El proyecto está organizado de la siguiente manera:
+Estructura del Proyecto
+El proyecto está organizado en los siguientes archivos:
 
-├── configuration.py # Configuración de rutas y URLs del servicio. ├── data.py # Datos utilizados en las solicitudes y pruebas. ├── sender_stand_request.py # Funciones para enviar solicitudes HTTP. ├── create_kit_name_test.py # Archivo con las pruebas automatizadas. ├── README.md # Descripción del proyecto y pasos para ejecutar. ├── .gitignore # Archivos y directorios a ignorar por Git.
+├── data.py                    # Datos utilizados en las solicitudes y pruebas.
+├── UrbanRoutesLocators.py      # Localizadores de elementos de la página de Urban Routes.
+├── TestUrbanRoutes.py          # Pruebas automatizadas para el proceso de solicitud de taxi.
+├── UrbanRoutesPage.py          # Funciones y acciones relacionadas con la página de Urban Routes.
+├── setup_driver.py             # Configuración del driver de Selenium para Chrome.
+├── README.md                  # Descripción del proyecto y pasos para ejecutar.
+├── .gitignore                 # Archivos y directorios a ignorar por Git.
 
-Tecnologías utilizadas
-Python
-Requests (para realizar solicitudes HTTP)
-pytest (para ejecutar las pruebas)
-GitHub (para gestionar el código y colaborar)
-Instrucciones para ejecutar las pruebas
-git clone https://github.com/Crosty02/qa-project-Urban-Grocers-app-es.git Ingresar a pycharm buscar el archivo y crear un nuevo proyecto, ejecutar pruebas.
-El proyecto consta de los siguientes archivos:
-configuration.py Este archivo contiene las configuraciones principales, como la URL base del servicio y las rutas de las solicitudes.
 
-data.py Contiene los datos predefinidos para las solicitudes, como el cuerpo de las peticiones (user_body, kit_body) y encabezados (headers).
+Tecnologías Utilizadas
+Python: Lenguaje de programación principal.
+Requests: Biblioteca para realizar solicitudes HTTP.
+pytest: Framework para ejecutar las pruebas automatizadas.
+GitHub: Para gestionar el código fuente y colaborar en el proyecto.
 
-sender_stand_request.py Incluye las funciones para enviar las solicitudes HTTP al servicio, como la creación de usuarios y kits.
+Instrucciones para Ejecutar las Pruebas
+Sigue estos pasos para ejecutar las pruebas:
 
-create_kit_name_test.py Este archivo contiene las pruebas automatizadas, organizadas según la lista de comprobación.
+Clona el repositorio:
+git clone https://github.com/Crosty02/qa-project-Urban-Routes-es.git
+Abre el proyecto en tu editor preferido (como PyCharm) y crea un nuevo entorno de proyecto.
+Instala las dependencias necesarias (si es que no están instaladas aún):
+pip install -r requirements.txt
+Ejecuta las pruebas utilizando pytest
 
-README.md Este archivo explica el propósito del proyecto y cómo ejecutarlo.
+Para ejecutar las pruebas, navega al archivo main.py y ejecuta:
+pytest TestUrbanRoutes.py
+Las pruebas se ejecutarán y los resultados se mostrarán en la consola.
 
-.gitignore Define los archivos y directorios que deben ser ignorados por Git.
+Pruebas Automatizadas
 
-Ejecutar las pruebas en pytest create_kit_name_test.py
-Validar resultados Cada prueba valida un caso de la lista de comprobación. Los resultados se mostrarán en la consola.
-Lista de Comprobación de Pruebas Positivas Nombre mínimo válido (1 carácter) Nombre máximo válido (511 caracteres) Uso de caracteres especiales Uso de espacios Uso de números
-Lista de Comprobación de Pruebas Negativas Nombre mínimo válido (1 carácter) Nombre vacío Nombre excede el límite (512 caracteres) Parámetro name no se pasa en solicitud Tipo de dato incorrecto para name
+Las pruebas automatizadas cubren los siguientes pasos en el proceso de solicitud de un taxi:
+
+* Configurar la dirección: Validar que la dirección de recogida se configure correctamente.
+* Seleccionar la tarifa Comfort: Verificar que la tarifa Comfort se seleccione sin problemas.
+* Rellenar el número de teléfono: Comprobar que el número de teléfono se ingrese correctamente y sea válido.
+* Agregar una tarjeta de crédito: Validar que se pueda agregar una tarjeta de crédito correctamente
+(recuerda que el campo CVV debe perder el enfoque para activar el botón).
+Escribir un mensaje para el controlador: Comprobar que el mensaje se envíe correctamente.
+* Pedir una manta y pañuelos: Verificar que los artículos sean añadidos correctamente.
+* Pedir 2 helados: Confirmar que los helados se pidan correctamente.
+* Aparece el modal de búsqueda de taxi: Validar que el modal de búsqueda se muestre correctamente.
+* Información del conductor: Validar que la información del conductor aparezca en el modal después 
+de la asignación del conductor.
+
+Ejercicio Adicional (Opcional)
+El ejercicio incluye una parte opcional que involucra la verificación de la cuenta regresiva y 
+la visualización de los detalles del viaje cuando un conductor es asignado.
+Esta parte es un desafío adicional para asegurarse de que el flujo de trabajo sea correcto.

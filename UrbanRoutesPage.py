@@ -1,7 +1,8 @@
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from localizadores.urban_routes_locators import UrbanRoutesLocators
+from localizadores.Urban_Routes_Locators import UrbanRoutesLocators
+
 
 class UrbanRoutesPage:
     def __init__(self, driver):
@@ -9,11 +10,14 @@ class UrbanRoutesPage:
         self.wait = WebDriverWait(driver, 10)
 
     def set_route(self, from_address, to_address):
-        """Ingresa la dirección de origen y destino"""
+        """Ingresa la dirección de origen y destino y llama un taxi"""
         from_field = self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.FROM_FIELD))
         to_field = self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.TO_FIELD))
         from_field.send_keys(from_address)
         to_field.send_keys(to_address)
+
+        # Hacer clic en "Llamar un taxi" para habilitar selección de tarifa
+        self.wait.until(EC.element_to_be_clickable(UrbanRoutesLocators.CALL_TAXI_BUTTON)).click()
 
     def select_comfort_tariff(self):
         """Selecciona la tarifa Comfort"""
@@ -21,7 +25,8 @@ class UrbanRoutesPage:
 
     def enter_phone_number(self, phone):
         """Ingresa el número de teléfono"""
-        self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.PHONE_INPUT)).send_keys(phone)
+        phone_input = self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.PHONE_INPUT))
+        phone_input.send_keys(phone)
 
     def add_credit_card(self, card_number, cvv, retrieve_phone_code):
         """Añade una tarjeta de crédito y confirma el código de seguridad"""
@@ -45,7 +50,8 @@ class UrbanRoutesPage:
 
     def send_message(self, message):
         """Envía un mensaje al conductor"""
-        self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.MESSAGE_INPUT)).send_keys(message)
+        message_input = self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.MESSAGE_INPUT))
+        message_input.send_keys(message)
 
     def request_blanket_and_tissues(self):
         """Solicita una manta y pañuelos"""
@@ -65,3 +71,39 @@ class UrbanRoutesPage:
         """Espera a que aparezca la información del conductor"""
         self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.DRIVER_INFO))
 
+    # Métodos auxiliares para validar datos en las pruebas
+    def get_from_address(self):
+        """Obtiene la dirección de origen ingresada"""
+        return self.driver.find_element(*UrbanRoutesLocators.FROM_FIELD).get_attribute("value")
+
+    def get_to_address(self):
+        """Obtiene la dirección de destino ingresada"""
+        return self.driver.find_element(*UrbanRoutesLocators.TO_FIELD).get_attribute("value")
+
+    def is_comfort_selected(self):
+        """Verifica si la tarifa Comfort está seleccionada"""
+        return "selected" in self.driver.find_element(*UrbanRoutesLocators.COMFORT_TARIFF).get_attribute("class")
+
+    def get_phone_number(self):
+        """Obtiene el número de teléfono ingresado"""
+        return self.driver.find_element(*UrbanRoutesLocators.PHONE_INPUT).get_attribute("value")
+
+    def get_sent_message(self):
+        """Obtiene el mensaje enviado al conductor"""
+        return self.driver.find_element(*UrbanRoutesLocators.MESSAGE_INPUT).get_attribute("value")
+
+    def is_blanket_selected(self):
+        """Verifica si la opción de frazada está seleccionada"""
+        return self.driver.find_element(*UrbanRoutesLocators.BLANKET_CHECKBOX).is_selected()
+
+    def get_ice_cream_count(self):
+        """Cuenta cuántos helados se han agregado"""
+        return int(self.driver.find_element(*UrbanRoutesLocators.ICE_CREAM_PLUS_BUTTON).get_attribute("value"))
+
+    def is_taxi_search_modal_visible(self):
+        """Verifica si el modal de búsqueda de taxi está visible"""
+        return self.driver.find_element(*UrbanRoutesLocators.SEARCH_TAXI_MODAL).is_displayed()
+
+    def is_driver_info_visible(self):
+        """Verifica si la información del conductor está visible"""
+        return self.driver.find_element(*UrbanRoutesLocators.DRIVER_INFO).is_displayed()

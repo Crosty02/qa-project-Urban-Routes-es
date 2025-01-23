@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 class UrbanRoutesLocators:
     FROM_FIELD = (By.ID, "from")
     TO_FIELD = (By.ID, "to")
+    CALL_TAXI_BUTTON = (By.ID, "call-taxi")  # <-- Agregar este localizador si falta
     COMFORT_TARIFF = (By.XPATH, "//button[contains(text(), 'Comfort')]")
     PHONE_INPUT = (By.ID, "phone")
     ADD_CARD_BUTTON = (By.ID, "add-card")
