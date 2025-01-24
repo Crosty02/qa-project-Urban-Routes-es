@@ -1,3 +1,4 @@
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -5,19 +6,17 @@ from localizadores.Urban_Routes_Locators import UrbanRoutesLocators
 
 
 class UrbanRoutesPage:
+
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
+        self.wait = WebDriverWait(driver, 20)
 
-    def set_route(self, from_address, to_address):
-        """Ingresa la dirección de origen y destino y llama un taxi"""
-        from_field = self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.FROM_FIELD))
-        to_field = self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.TO_FIELD))
-        from_field.send_keys(from_address)
-        to_field.send_keys(to_address)
+    def set_route(self, address_from, address_to ):
+        self.driver.find_element(*UrbanRoutesLocators.FROM_FIELD).click()
+        self.driver.find_element(*FROM_FIELD).send_keys("from_address")
+        self.driver.find_element(By.TO_FIELD,"to_address").click()
+        self.driver.find_element(By.TO_FIELD).send_keys("to_address")
 
-        # Hacer clic en "Llamar un taxi" para habilitar selección de tarifa
-        self.wait.until(EC.element_to_be_clickable(UrbanRoutesLocators.CALL_TAXI_BUTTON)).click()
 
     def select_comfort_tariff(self):
         """Selecciona la tarifa Comfort"""
@@ -72,11 +71,11 @@ class UrbanRoutesPage:
         self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.DRIVER_INFO))
 
     # Métodos auxiliares para validar datos en las pruebas
-    def get_from_address(self):
+    def get_address_from(self):
         """Obtiene la dirección de origen ingresada"""
         return self.driver.find_element(*UrbanRoutesLocators.FROM_FIELD).get_attribute("value")
 
-    def get_to_address(self):
+    def get_address_to(self):
         """Obtiene la dirección de destino ingresada"""
         return self.driver.find_element(*UrbanRoutesLocators.TO_FIELD).get_attribute("value")
 
@@ -100,10 +99,8 @@ class UrbanRoutesPage:
         """Cuenta cuántos helados se han agregado"""
         return int(self.driver.find_element(*UrbanRoutesLocators.ICE_CREAM_PLUS_BUTTON).get_attribute("value"))
 
-    def is_taxi_search_modal_visible(self):
+    def get_taxi_search_modal_visible(self):
         """Verifica si el modal de búsqueda de taxi está visible"""
         return self.driver.find_element(*UrbanRoutesLocators.SEARCH_TAXI_MODAL).is_displayed()
 
-    def is_driver_info_visible(self):
-        """Verifica si la información del conductor está visible"""
-        return self.driver.find_element(*UrbanRoutesLocators.DRIVER_INFO).is_displayed()
+
