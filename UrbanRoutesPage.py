@@ -12,10 +12,15 @@ class UrbanRoutesPage:
         self.wait = WebDriverWait(driver, 20)
 
     def set_route(self, address_from, address_to ):
-        self.driver.find_element(*UrbanRoutesLocators.FROM_FIELD).click()
-        self.driver.find_element(*FROM_FIELD).send_keys("from_address")
-        self.driver.find_element(By.TO_FIELD,"to_address").click()
-        self.driver.find_element(By.TO_FIELD).send_keys("to_address")
+        self.driver.find_element(*UrbanRoutesLocators.FROM_FIELD)
+        from_field.click()
+        from_field.clear()
+        from_field.send_keys(address_from)
+
+        to_field = self.driver.find_element(*UrbanRoutesLocators.TO_FIELD)
+        to_field.click()
+        to_field.clear()
+        to_field.send_keys(address_to)
 
 
     def select_comfort_tariff(self):
