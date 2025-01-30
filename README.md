@@ -1,13 +1,13 @@
-Proyecto Urban Routes
-Desarrollado por: Crystal Puentes - Grupo 19 QA
+# Proyecto Urban Routes
+# Desarrollado por: Crystal Puentes - Grupo 19 QA
 
-Descripción del Proyecto
+# Descripción del Proyecto
 El objetivo de este proyecto es automatizar las pruebas sobre el proceso completo de solicitar un taxi en 
 Urban Routes. Las pruebas cubren acciones como la configuración de la dirección, la selección de tarifa, el 
 ingreso de datos personales y de pago, y la solicitud de un taxi, entre otros. Se validan tanto los flujos 
 principales como casos opcionales, como la visualización de la información del conductor.
 
-Estructura del Proyecto
+# Estructura del Proyecto
 El proyecto está organizado en los siguientes archivos:
 
 ├── data.py                    # Datos utilizados en las solicitudes y pruebas.
@@ -19,15 +19,14 @@ El proyecto está organizado en los siguientes archivos:
 ├── .gitignore                 # Archivos y directorios a ignorar por Git.
 
 
-Tecnologías Utilizadas
+# Tecnologías Utilizadas
 Python: Lenguaje de programación principal.
 Requests: Biblioteca para realizar solicitudes HTTP.
 pytest: Framework para ejecutar las pruebas automatizadas.
 GitHub: Para gestionar el código fuente y colaborar en el proyecto.
 
-Instrucciones para Ejecutar las Pruebas
+# Instrucciones para Ejecutar las Pruebas
 Sigue estos pasos para ejecutar las pruebas:
-
 Clona el repositorio:
 git clone https://github.com/Crosty02/qa-project-Urban-Routes-es.git
 Abre el proyecto en tu editor preferido (como PyCharm) y crea un nuevo entorno de proyecto.
@@ -39,7 +38,7 @@ Para ejecutar las pruebas, navega al archivo main.py y ejecuta:
 pytest TestUrbanRoutes.py
 Las pruebas se ejecutarán y los resultados se mostrarán en la consola.
 
-Pruebas Automatizadas
+# Pruebas Automatizadas
 
 Las pruebas automatizadas cubren los siguientes pasos en el proceso de solicitud de un taxi:
 

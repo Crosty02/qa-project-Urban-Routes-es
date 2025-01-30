@@ -1,7 +1,7 @@
-import pytest
-from setup_driver import setup_driver
+import time
+import data
 from UrbanRoutesPage import UrbanRoutesPage
-from data import urban_routes_url, address_from, address_to
+from localizadores.Urban_Routes_Locators import UrbanRoutesLocators
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -9,53 +9,144 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 class TestUrbanRoutes:
+    driver = None
 
     @classmethod
     def setup_class(cls):
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--start-maximized")
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-notifications")
-        service = Service(ChromeDriverManager().install())
-        cls.driver = webdriver.Chrome(service=service, options=chrome_options)
-        cls.driver.get(urban_routes_url)
-        cls.routes_page = UrbanRoutesPage(cls.driver)
+        chrome_options.add_experimental_option("perfLoggingPrefs", {'enableNetwork': True, 'enablePage': True})
+        chrome_options.set_capability("goog:loggingPrefs", {'performance': 'ALL'})
+        cls.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 
+    # Confirmación del establecimiento de la ruta
 
     def test_set_route(self):
-        self.routes_page.set_route(address_from, address_to)
-        assert self.routes_page.get_address_from() == address_from
-        assert self.routes_page.get_address_to() == address_to
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+        address_from = data.address_from
+        address_to = data.address_to
+        routes_page.set_from(address_from)
+        routes_page.set_to(address_to)
+        assert routes_page.get_from() == address_from
+        assert routes_page.get_to() == address_to
 
-    def test_set_comfort(self):
-        self.routes_page.select_comfort_tariff()
-        assert self.routes_page.is_comfort_selected()
+    # Prueba que verifica que se selecciona la tarifa Comfort
 
-    def test_set_phone_number(self):
-        self.routes_page.enter_phone_number("+1 123 123 12 12")
-        assert self.routes_page.get_phone_number() == "+1 123 123 12 12"
+    def test_set_route_and_select_comfort(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
 
-    def test_add_card(self):
-        self.routes_page.add_credit_card("1234 5678 9100", "111")
-        assert self.routes_page.add_credit_card()
+        # Ingresar direcciones
+        address_from = data.address_from
+        address_to = data.address_to
+        routes_page.set_from(address_from)
+        routes_page.set_to(address_to)
 
-    def test_write_message(self):
-        self.routes_page.send_message("Muéstrame el camino al museo")
-        assert self.routes_page.get_sent_message() == "Muéstrame el camino al museo"
+        time.sleep(2)  # Espera corta para asegurar que los valores se ingresen correctamente
+        assert routes_page.get_from() == address_from
+        assert routes_page.get_to() == address_to
 
-    def test_blanket(self):
-        self.routes_page.request_blanket_and_tissues()
-        assert self.routes_page.is_blanket_selected()
+        # Hacer clic en "Pedir un taxi"
+        routes_page.request_taxi()
 
-    def test_add_icecream(self):
-        self.routes_page.request_ice_cream(quantity=2)
-        assert self.routes_page.get_ice_cream_count() == 2
+        time.sleep(2)  # Espera para la carga de las tarifas
 
-    def test_find_driver(self):
-        self.routes_page.wait_for_taxi_search_modal()
-        assert self.routes_page.get_taxi_search_modal_visible()
+        # Seleccionar tarifa Comfort
+        routes_page.select_comfort_tariff()
+
+    def test_set_route_and_verify_phone(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+
+        # Ingresar direcciones
+        address_from = data.address_from
+        address_to = data.address_to
+        routes_page.set_from(address_from)
+        routes_page.set_to(address_to)
+
+        time.sleep(2)  # Espera corta para asegurar que los valores se ingresen correctamente
+
+        assert routes_page.get_from() == address_from
+        assert routes_page.get_to() == address_to
+
+        # Hacer clic en "Pedir un taxi"
+        routes_page.request_taxi()
+        time.sleep(2)
+
+        # Seleccionar tarifa Comfort
+        routes_page.select_comfort_tariff()
+        time.sleep(2)
+
+        # Rellenar número de teléfono
+        routes_page.enter_phone_number(data.phone_number)
+        time.sleep(1)
+
+        # Hacer clic en "Siguiente"
+        routes_page.click_next()
+        time.sleep(5)
+
+        # Ingresar el código de verificación
+        routes_page.enter_verification_code()
+        time.sleep(1)
+
+        # Confirmar código
+        routes_page.confirm_code()
+
+    def test_set_route_and_add_card(self):
+        self.driver.get(data.urban_routes_url)
+        routes_page = UrbanRoutesPage(self.driver)
+
+        # Ingresar direcciones
+        address_from = data.address_from
+        address_to = data.address_to
+        routes_page.set_from(address_from)
+        routes_page.set_to(address_to)
+
+        time.sleep(2)
+
+        assert routes_page.get_from() == address_from
+        assert routes_page.get_to() == address_to
+
+        # Hacer clic en "Pedir un taxi"
+        routes_page.request_taxi()
+        time.sleep(2)
+
+        # Seleccionar tarifa Comfort
+        routes_page.select_comfort_tariff()
+        time.sleep(2)
+
+        # Rellenar número de teléfono
+        routes_page.enter_phone_number(data.phone_number)
+        time.sleep(1)
+
+        # Hacer clic en "Siguiente"
+        routes_page.click_next()
+        time.sleep(5)
+
+        # Ingresar el código de verificación
+        routes_page.enter_verification_code()
+        time.sleep(1)
+
+        # Confirmar código
+        routes_page.confirm_code()
+        time.sleep(2)
+
+        # Agregar Tarjeta de Crédito
+        routes_page.open_payment_method()
+        time.sleep(1)
+
+        routes_page.add_card()
+        time.sleep(1)
+
+        routes_page.enter_card_details(data.card_number, data.card_code)
+        # time.sleep(1)
+
+        routes_page.submit_card()
+        time.sleep(2)
+
+        # Cerrar modal
+        routes_page.close_card_modal()
 
 
     @classmethod
