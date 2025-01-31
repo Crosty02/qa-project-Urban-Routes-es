@@ -165,3 +165,4 @@ class UrbanRoutesPage:
         reserve_button = self.wait.until(EC.element_to_be_clickable(UrbanRoutesLocators.RESERVE_TAXI_BUTTON))
         reserve_button.click()
 
+

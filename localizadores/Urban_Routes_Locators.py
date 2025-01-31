@@ -24,3 +24,4 @@ class UrbanRoutesLocators:
     RESERVE_TAXI_BUTTON = (By.XPATH,"//button[contains(@class, 'smart-button')]//span[contains(text(), 'Introducir un número de teléfono y reservar')]")
 
 
+
