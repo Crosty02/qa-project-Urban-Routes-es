@@ -38,7 +38,6 @@ class UrbanRoutesPage:
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.COMFORT_TARIFF)).click()
 
     def enter_phone_number(self, phone_number):
-        """Hace clic en el campo de teléfono y escribe el número."""
         WebDriverWait(self.driver, 10).until(
         EC.element_to_be_clickable(UrbanRoutesLocators.PHONE_FIELD_LABEL)).click()
         phone_input = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.PHONE_INPUT))
@@ -46,10 +45,8 @@ class UrbanRoutesPage:
         phone_input.send_keys(phone_number)
 
     def click_next(self):
-        """Hace clic en el botón 'Siguiente' después de ingresar el número de teléfono."""
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.NEXT_BUTTON)).click()
     def enter_verification_code(self):
-        """Obtiene el código de verificación y lo ingresa en el campo correspondiente."""
         time.sleep(5)  # Espera para asegurarse de que el código haya llegado
         code = retrieve_phone_code(self.driver)
         if not code:raise Exception("No se pudo obtener el código de verificación.")
@@ -59,7 +56,6 @@ class UrbanRoutesPage:
         code_input.send_keys(code)
 
     def confirm_code(self):
-        """Hace clic en el botón 'Confirmar' después de ingresar el código de verificación."""
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.CONFIRM_BUTTON)).click()
 
     def confirm_phone_number(self):
@@ -71,67 +67,31 @@ class UrbanRoutesPage:
         code_input = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.CODE_INPUT))
         code_input.send_keys(code)
 
-    def open_payment_method(self):
-        """Hace clic en 'Método de pago'."""
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.PAYMENT_METHOD)).click()
+    def add_card(self, card_number, card_code):
 
-    def add_card(self):
-        """Hace clic en 'Agregar tarjeta'."""
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.ADD_CARD_BUTTON)).click()
+            # Hacer clic en metodo de pago
+            payment_button = self.wait.until(EC.element_to_be_clickable(UrbanRoutesLocators.PAYMENT_METHOD_BUTTON))
+            payment_button.click()
 
-    def enter_card_details(self, card_number, card_cvv):
-        """Rellena los datos de la tarjeta asegurando que el CVV esté visible y habilitado."""
+            # Hacer clic en "Agregar tarjeta"
+            add_card_button = self.wait.until(EC.element_to_be_clickable(UrbanRoutesLocators.ADD_CARD_BUTTON))
+            add_card_button.click()
 
-        print("Esperando que el modal de 'Agregar tarjeta' se cargue completamente...")
-        time.sleep(2)  # Espera extra para evitar problemas de carga
+            # Ingresar el número de tarjeta
+            card_number_input = self.wait.until(EC.presence_of_element_located(UrbanRoutesLocators.CARD_NUMBER_INPUT))
+            card_number_input.send_keys(card_number)
 
-        # **Paso 1: Ingresar el número de la tarjeta**
-        print("Esperando el campo de número de tarjeta...")
-        card_input = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(UrbanRoutesLocators.CARD_NUMBER_INPUT)
-        )
-        print("Campo de número de tarjeta encontrado y habilitado.")
-        card_input.clear()
-        card_input.send_keys(card_number)
-        print(f"Número de tarjeta ingresado: {card_number}")
+            # Ingresar el código CVV
+            card_code_input = self.wait.until(EC.presence_of_element_located(UrbanRoutesLocators.CARD_CODE_INPUT))
+            card_code_input.send_keys(card_code)
 
-        # **Paso 2: Intentar detectar el CVV**
-        try:
-            print("Esperando el campo CVV...")
-            cvv_input = WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located(UrbanRoutesLocators.CARD_CVV_INPUT)
-            )
-        except:
-            print(
-                "⚠️ No se encontró el campo CVV automáticamente. Intentando hacer clic en un espacio vacío para activarlo.")
-            empty_space = WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.TAG_NAME, "body"))  # Clic en el fondo de la página
-            )
-            empty_space.click()
-            time.sleep(2)  # Esperar que la página reaccione
+            # Hacer clic en "Agregar"
+            add_button = self.wait.until(EC.visibility_of_element_located(UrbanRoutesLocators.ADD_CARD_SUBMIT_BUTTON))
+            add_button.click()
 
-            # Intentar encontrar el CVV nuevamente
-            cvv_input = WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located(UrbanRoutesLocators.CARD_CVV_INPUT)
-            )
-
-        print("Campo CVV encontrado y habilitado.")
-
-        # **Paso 3: Ingresar el CVV**
-        cvv_input.clear()
-        cvv_input.send_keys(card_cvv)
-        print(f"CVV ingresado correctamente: {card_cvv}")
-
-        # **Paso 4: Simular pérdida de enfoque**
-        cvv_input.send_keys(Keys.TAB)
-        time.sleep(1)
-        print("Campo CVV completado y enfoque cambiado.")
-
-    def submit_card(self):
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.ADD_CARD_SUBMIT)).click()
-
-    def close_card_modal(self):
-     WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.CLOSE_MODAL)).click()
+            # Cerrar el modal
+            close_button = self.wait.until(EC.presence_of_element_located(UrbanRoutesLocators.CLOSE_CARD_WINDOW_BUTTON))
+            self.driver.execute_script("arguments[0].click();", close_button)
 
     def enter_driver_message(self, message):
         # Hacer clic en el label para activar el campo
@@ -141,6 +101,7 @@ class UrbanRoutesPage:
         message_input = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.MESSAGE_INPUT))
         message_input.clear()
         message_input.send_keys(message)
+
 
     def request_blanket_tissues(self):
         # Hacer clic en la etiqueta para seleccionar la opción
@@ -164,5 +125,6 @@ class UrbanRoutesPage:
     def reserve_taxi(self):
         reserve_button = self.wait.until(EC.element_to_be_clickable(UrbanRoutesLocators.RESERVE_TAXI_BUTTON))
         reserve_button.click()
+
 
 
