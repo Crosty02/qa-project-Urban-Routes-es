@@ -1,17 +1,12 @@
 import time
 import data
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from UrbanRoutesPage import UrbanRoutesPage
-from localizadores.Urban_Routes_Locators import UrbanRoutesLocators
 from selenium import webdriver
+from UrbanRoutesPage import UrbanRoutesPage
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from verification_code import retrieve_phone_code
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from localizadores.Urban_Routes_Locators import UrbanRoutesLocators
 
 
 class TestUrbanRoutes:
@@ -24,7 +19,7 @@ class TestUrbanRoutes:
         cls.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 
-    # Confirmación del establecimiento de la ruta
+    # 1 Confirmación del establecimiento de la ruta
 
     def test_set_route(self):
         self.driver.get(data.urban_routes_url)
@@ -36,7 +31,7 @@ class TestUrbanRoutes:
         assert routes_page.get_from() == address_from
         assert routes_page.get_to() == address_to
 
-    # Prueba que verifica que se selecciona la tarifa Comfort
+    # 2 Prueba que verifica que se selecciona la tarifa Comfort
 
     def test_set_route_and_select_comfort(self):
         self.driver.get(data.urban_routes_url)
@@ -55,9 +50,10 @@ class TestUrbanRoutes:
 
         # Seleccionar tarifa Comfort
         routes_page.select_comfort_tariff()
+        assert routes_page.is_comfort_selected(), "Error: La tarifa Comfort no fue seleccionada correctamente."
 
 
-    # Prueba que verifica que se agrega el número de teléfono y el código de confirmation
+    # 3 Prueba que verifica que se agrega el número de teléfono y el código de confirmation
 
     def test_set_route_and_verify_phone(self):
         self.driver.get(data.urban_routes_url)
@@ -68,11 +64,7 @@ class TestUrbanRoutes:
         address_to = data.address_to
         routes_page.set_from(address_from)
         routes_page.set_to(address_to)
-
-        time.sleep(2)  # Espera corta para asegurar que los valores se ingresen correctamente
-
-        assert routes_page.get_from() == address_from
-        assert routes_page.get_to() == address_to
+        time.sleep(2)
 
         # Hacer clic en "Pedir un taxi"
         routes_page.request_taxi()
@@ -96,6 +88,12 @@ class TestUrbanRoutes:
 
         # Confirmar código
         routes_page.confirm_code()
+
+        # Verificar que el número de teléfono ingresado es correcto
+        phone_value = routes_page.get_phone_value()
+        assert phone_value == data.phone_number, f"Error: Se ingresó '{phone_value}', pero se esperaba '{data.phone_number}'."
+
+    # 4 Prueba que verifica que se agrega la tarjeta
 
     def test_add_card(self):
             """Prueba para agregar una tarjeta después de validar el número."""
@@ -133,7 +131,7 @@ class TestUrbanRoutes:
             # Confirmar código
             routes_page.confirm_code()
 
-            # 3️⃣ Agregar tarjeta
+            #  Agregar tarjeta
             routes_page.add_card(data.card_number, data.card_code)
 
             #  Verificar que la tarjeta se agregó correctamente
@@ -142,6 +140,9 @@ class TestUrbanRoutes:
 
             assert card_confirmation_element.text == "Tarjeta", \
             f"⚠ Error: Se esperaba 'Tarjeta', pero se encontró: {card_confirmation_element.text}"
+
+
+    # 5 Prueba que verifica que se envia mensaje al conductor
 
     def test_set_route_add_card_and_message(self):
         self.driver.get(data.urban_routes_url)
@@ -162,10 +163,31 @@ class TestUrbanRoutes:
         routes_page.select_comfort_tariff()
         time.sleep(2)
 
-        # Escribir mensaje para el conductor
-        routes_page.enter_driver_message(data.message_for_driver)
+        # Rellenar número de teléfono
+        routes_page.enter_phone_number(data.phone_number)
         time.sleep(1)
 
+        # Hacer clic en "Siguiente"
+        routes_page.click_next()
+        time.sleep(5)
+
+        # Ingresar el código de verificación
+        routes_page.enter_verification_code()
+        time.sleep(1)
+
+        # Confirmar código
+        routes_page.confirm_code()
+
+        message = data.message_for_driver
+        routes_page.enter_driver_message(message)
+        time.sleep(1)
+
+        # Verificar que el mensaje se ingresó correctamente usando el localizador correcto
+        message_input = self.driver.find_element(*UrbanRoutesLocators.MESSAGE_INPUT)
+        assert message_input.get_attribute("value") == message, \
+        f"⚠ Error: Se esperaba '{message}', pero el campo contiene '{message_input.get_attribute('value')}'."
+
+    # 6 Prueba que verifica que se pide la manta y los pañuelos
 
     def test_request_blanket_and_tissues(self):
         self.driver.get(data.urban_routes_url)
@@ -178,13 +200,28 @@ class TestUrbanRoutes:
         routes_page.set_to(address_to)
         time.sleep(2)
 
-        # Pedir un taxi
+        # Hacer clic en "Pedir un taxi"
         routes_page.request_taxi()
         time.sleep(2)
 
-        #  Seleccionar tarifa Comfort
+        # Seleccionar tarifa Comfort
         routes_page.select_comfort_tariff()
         time.sleep(2)
+
+        # Rellenar número de teléfono
+        routes_page.enter_phone_number(data.phone_number)
+        time.sleep(1)
+
+        # Hacer clic en "Siguiente"
+        routes_page.click_next()
+        time.sleep(5)
+
+        # Ingresar el código de verificación
+        routes_page.enter_verification_code()
+        time.sleep(1)
+
+        # Confirmar código
+        routes_page.confirm_code()
 
         #  Pedir Manta y Pañuelos
         routes_page.request_blanket_tissues()
@@ -193,6 +230,8 @@ class TestUrbanRoutes:
         # Validación: Verificar que el interruptor está activado
         switch = self.driver.find_element(*UrbanRoutesLocators.BLANKET_TISSUE_SWITCH)
         assert switch.is_selected()
+
+    # 7 Prueba que verifica que se pide los dos helados
 
     def test_request_two_ice_creams(self):
         self.driver.get(data.urban_routes_url)
@@ -205,8 +244,7 @@ class TestUrbanRoutes:
         routes_page.set_to(address_to)
         time.sleep(2)
 
-
-        # Pedir un taxi
+        # Hacer clic en "Pedir un taxi"
         routes_page.request_taxi()
         time.sleep(2)
 
@@ -214,9 +252,32 @@ class TestUrbanRoutes:
         routes_page.select_comfort_tariff()
         time.sleep(2)
 
+        # Rellenar número de teléfono
+        routes_page.enter_phone_number(data.phone_number)
+        time.sleep(1)
+
+        # Hacer clic en "Siguiente"
+        routes_page.click_next()
+        time.sleep(5)
+
+        # Ingresar el código de verificación
+        routes_page.enter_verification_code()
+        time.sleep(1)
+
+        # Confirmar código
+        routes_page.confirm_code()
+
         # Pedir 2 Helados
         routes_page.request_two_ice_creams()
         time.sleep(2)
+
+        #  Verificar que la cantidad de helados es 2 y que el localizador es correcto
+        ice_cream_count_element = self.driver.find_element(*UrbanRoutesLocators.ICE_CREAM_COUNT)
+        ice_cream_count = ice_cream_count_element.text.strip()
+        assert ice_cream_count == "2", f"⚠ Error: Se esperaban 2 helados, pero el contador muestra '{ice_cream_count}'."
+
+
+    # 8 Prueba que verifica que reserva el taxi
 
     def test_reserve_taxi_modal(self):
         self.driver.get(data.urban_routes_url)
@@ -249,12 +310,16 @@ class TestUrbanRoutes:
         routes_page.enter_verification_code()
         time.sleep(1)
 
-        # Confirmar código
+        #Confirmar código
         routes_page.confirm_code()
 
-        # Esperar a que el modal aparezca y reservar el taxi
+        # Reservar el taxi
         routes_page.reserve_taxi()
-        time.sleep(1)
+
+        #  Confirmar que el modal de reserva realmente apareció
+        modal = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.MODAL_VISIBLE))
+        assert modal.is_displayed(), "⚠ Error: El modal de reserva de taxi no se mostró correctamente."
+
 
     @classmethod
     def teardown_class(cls):

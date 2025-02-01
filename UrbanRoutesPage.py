@@ -1,5 +1,3 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from localizadores.Urban_Routes_Locators import UrbanRoutesLocators
@@ -35,17 +33,28 @@ class UrbanRoutesPage:
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.REQUEST_TAXI_BUTTON)).click()
 
     def select_comfort_tariff(self):
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.COMFORT_TARIFF)).click()
+    # Esperar que el elemento sea clickable y hacer clic
+        comfort_element = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.COMFORT_TARIFF))
+        comfort_element.click()
+
+    def is_comfort_selected(self):
+        # Esperar a que el div de Comfort tenga la clase "active"
+        selected_element = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.COMFORT_TARIFF))
+        # Obtener la clase del elemento después del clic
+        element_class = selected_element.get_attribute("class")
+        print(f"Clase del elemento después del clic: {element_class}")
+        return "active" in element_class  # Verifica si tiene la clase "active"
+
 
     def enter_phone_number(self, phone_number):
-        WebDriverWait(self.driver, 10).until(
-        EC.element_to_be_clickable(UrbanRoutesLocators.PHONE_FIELD_LABEL)).click()
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.PHONE_FIELD_LABEL)).click()
         phone_input = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.PHONE_INPUT))
         phone_input.clear()
         phone_input.send_keys(phone_number)
 
     def click_next(self):
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.NEXT_BUTTON)).click()
+
     def enter_verification_code(self):
         time.sleep(5)  # Espera para asegurarse de que el código haya llegado
         code = retrieve_phone_code(self.driver)
@@ -55,17 +64,20 @@ class UrbanRoutesPage:
         code_input.clear()
         code_input.send_keys(code)
 
-    def confirm_code(self):
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.CONFIRM_BUTTON)).click()
-
-    def confirm_phone_number(self):
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.CONFIRM_BUTTON)).click()
-
     def verification_code(self):
         code = retrieve_phone_code(self.driver)  # Obtiene el código de verificación
         if not code:raise Exception("No se pudo obtener el código de verificación.")
         code_input = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.CODE_INPUT))
         code_input.send_keys(code)
+
+    def confirm_code(self):
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(UrbanRoutesLocators.CONFIRM_BUTTON)).click()
+
+    def get_phone_value(self):
+        """Obtiene el valor actual del campo de teléfono."""
+        phone_input = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.PHONE_INPUT))
+        return phone_input.get_attribute("value")  # Devuelve el número ingresado
+
 
     def add_card(self, card_number, card_code):
 
@@ -125,6 +137,7 @@ class UrbanRoutesPage:
     def reserve_taxi(self):
         reserve_button = self.wait.until(EC.element_to_be_clickable(UrbanRoutesLocators.RESERVE_TAXI_BUTTON))
         reserve_button.click()
+        modal = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.MODAL_VISIBLE))
 
 
 
