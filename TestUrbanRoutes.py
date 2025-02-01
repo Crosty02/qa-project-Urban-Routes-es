@@ -1,4 +1,7 @@
 import time
+
+from selenium.webdriver.common.by import By
+
 import data
 from selenium import webdriver
 from UrbanRoutesPage import UrbanRoutesPage
@@ -277,49 +280,44 @@ class TestUrbanRoutes:
         assert ice_cream_count == "2", f"⚠ Error: Se esperaban 2 helados, pero el contador muestra '{ice_cream_count}'."
 
 
-    # 8 Prueba que verifica que reserva el taxi
+    # 8 Prueba que verifica que reserva el taxi modal
 
     def test_reserve_taxi_modal(self):
         self.driver.get(data.urban_routes_url)
         routes_page = UrbanRoutesPage(self.driver)
 
-        # Establecer la ruta
+        # Ingresar direcciones
         address_from = data.address_from
         address_to = data.address_to
         routes_page.set_from(address_from)
         routes_page.set_to(address_to)
         time.sleep(2)
 
-        # Pedir un taxi
+        # Hacer clic en "Pedir un taxi"
         routes_page.request_taxi()
-        time.sleep(2)
 
         # Seleccionar tarifa Comfort
         routes_page.select_comfort_tariff()
-        time.sleep(2)
 
         # Rellenar número de teléfono
+
         routes_page.enter_phone_number(data.phone_number)
-        time.sleep(1)
 
         # Hacer clic en "Siguiente"
         routes_page.click_next()
-        time.sleep(5)
 
         # Ingresar el código de verificación
         routes_page.enter_verification_code()
-        time.sleep(1)
 
-        #Confirmar código
+        # Confirmar código
         routes_page.confirm_code()
 
-        # Reservar el taxi
-        routes_page.reserve_taxi()
+        routes_page.request_route_and_verify_modal()
 
-        #  Confirmar que el modal de reserva realmente apareció
-        modal = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.MODAL_VISIBLE))
-        assert modal.is_displayed(), "⚠ Error: El modal de reserva de taxi no se mostró correctamente."
-
+        # Verificar que el modal sea visible
+        modal = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'order-header-title') and text()='Buscar automóvil']"))
+     ,"El modal con el título 'Buscar automóvil' no apareció.")
+        assert modal.is_displayed()
 
     @classmethod
     def teardown_class(cls):

@@ -1,4 +1,5 @@
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from localizadores.Urban_Routes_Locators import UrbanRoutesLocators
 from verification_code import retrieve_phone_code
@@ -83,7 +84,7 @@ class UrbanRoutesPage:
         return phone_input.get_attribute("value")  # Devuelve el número ingresado
 
 
-        # 4 Prueba que verifica que se agrega la tarjeta
+         # 4 Prueba que verifica que se agrega la tarjeta
 
     def add_card(self, card_number, card_code):
 
@@ -141,12 +142,15 @@ class UrbanRoutesPage:
         time.sleep(1)  # Pequeño delay en caso de animación
         plus_button.click()
 
-     # 8 Prueba que verifica que reserva el taxi
+    def request_route_and_verify_modal(self):
+        route_button = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(UrbanRoutesLocators.REQUEST_ROUTE_BUTTON),"El botón del recorrido no está disponible o no es clickeable.")
+        route_button.click()
 
-    def reserve_taxi(self):
-        reserve_button = self.wait.until(EC.element_to_be_clickable(UrbanRoutesLocators.RESERVE_TAXI_BUTTON))
-        reserve_button.click()
-        modal = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(UrbanRoutesLocators.MODAL_VISIBLE))
+
+
+
+
+
 
 
 
